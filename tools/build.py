@@ -15,6 +15,8 @@ import cmpdec
 import cmpenc
 import grpdat
 import story
+import ingame
+import ranking
 import gfx
 import menus
 import screens
@@ -264,7 +266,10 @@ def build(epr, reg, grp, comic):
         log.append('%s set %x bytes' % (name, len(blob.rstrip(b'\0'))))
     pc = gfx.pc_font(font)
     log += menus.build(reg, pc, block)
+    log += ingame.build(reg, grp)
+    log += ingame.tags(reg, block)
     log += screens.build(reg, prog, PROG_BASE, pc, block, lambda at: next_set(prog, at), place)
+    log += ranking.build(reg, prog, PROG_BASE, block, lambda at: next_set(prog, at), place)
     # advance widths by character code, and the text engine
     widths = bytearray([16] * 256)
     for c, (adv, cell) in font.items():
