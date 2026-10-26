@@ -15,6 +15,7 @@ import cmpdec
 import cmpenc
 import grpdat
 import aids
+import ending
 import nameentry
 import results
 import story
@@ -41,9 +42,11 @@ STORY = (0x45ffa4, 349, 0x465320)         # scenes: 16x16, balloon from 0x150
 # characters: ASCII at their codes, then these two
 EXTRA = {'…': 0x7f, '♪': 0x80}
 SPACE_W = 6
-# dialogue set: 0x20-0x2b are 8x16 letters; their English glyphs go to
-# these 16x16 entries (unused kana) and the descriptors are redirected
+# dialogue set: 0x20-0x2b are 8x16 block letters (digits, quotes) that the
+# result and time screens use; the English glyphs of these codes go to
+# these 16x16 entries (unused kana) and the win quotes use those codes
 DIALOGUE_LOW = 0x90
+LOW = {c: DIALOGUE_LOW + c - 0x20 for c in range(0x20, 0x2c)}
 
 # the win quotes in the program
 QUOTE_FIRST = 0x0604cc10
@@ -121,8 +124,6 @@ def build_set(reg, where, font, redirect):
         w, h, off, size = struct.unpack('>4H', desc[e * 8:e * 8 + 8])
         assert (w, h, size) == (16, 16, 0x0210), (hex(c), hex(e))
         pix[off * 8:off * 8 + 128] = pack4(cell)
-        if e != c:
-            desc[c * 8:c * 8 + 8] = desc[e * 8:e * 8 + 8]
     blob = reg[at:at + 4] + desc + cmpenc.compress(bytes(pix))
     assert len(blob) <= nxt - at, 'sprite set too big (%x > %x)' % (len(blob), nxt - at)
     return blob + bytes(nxt - at - len(blob))
@@ -139,7 +140,7 @@ def encode(text, font):
             w.append(0xff02)
         width = 0
         for ch in line:
-            w.append(code(ch))
+            w.append(LOW.get(code(ch), code(ch)))      # the dialogue set
             width += font[code(ch)][0]
         assert width <= 244, 'line too wide: %r (%d)' % (line, width)
     w.append(0xff00)
@@ -263,8 +264,7 @@ def build(epr, reg, grp, comic):
     font = pc_font(grp)
     # sprite sets
     block = gfx.block_font(gfx.SpriteSet(reg, DIALOGUE[0]))
-    low = {c: DIALOGUE_LOW + c - 0x20 for c in range(0x20, 0x2c)}
-    for name, where, redirect in (('dialogue', DIALOGUE, low), ('story', STORY, {})):
+    for name, where, redirect in (('dialogue', DIALOGUE, LOW), ('story', STORY, {})):
         blob = build_set(reg, where, font, redirect)
         reg[where[0]:where[2]] = blob
         log.append('%s set %x bytes' % (name, len(blob.rstrip(b'\0'))))
@@ -281,6 +281,8 @@ def build(epr, reg, grp, comic):
     widths = bytearray([16] * 256)
     for c, (adv, cell) in font.items():
         widths[c] = adv
+    for c, e in LOW.items():
+        widths[e] = font[c][0]
     patch_code(prog, place(bytes(widths)))
     # win quotes
     starts = quote_starts(prog)
@@ -298,6 +300,7 @@ def build(epr, reg, grp, comic):
     charmap[0x1f] = [0x2c, 0x20]
     log += story.build(prog, PROG_BASE, comic, charmap, widths, place)
     log += tutorial.build(prog, PROG_BASE, widths, place)
+    log += ending.build(reg, prog, PROG_BASE, pc, place)
     # program
     comp = cmpenc.compress(bytes(prog))
     assert PROG_AT + len(comp) <= end, 'program does not fit (%x > %x)' % (len(comp), end - PROG_AT)

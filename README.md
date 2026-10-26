@@ -29,14 +29,14 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Rules demonstration (attract mode) | English, checked in the emulator |
 | "Act Against AIDS" screen (attract mode): slogan and its three lines | English, checked in the emulator |
 | Results screen after the last game: MAX CHAIN; VS opponent name, Total (PC patch picture) | English; MAX CHAIN checked in the emulator, the names not yet seen |
+| Ending: Arle and Carbuncle under the moon (18 lines, written across in place of the vertical kana) | English, checked in the emulator (the lines of the course played) |
 | Name entry title (Draco, Arle, Schezo) | English, checked in the emulator (Arle) |
 | ROM set `puyosune`, build script, driver entry | done |
 
 Nothing is left in Japanese that we have seen. The "Act Against AIDS"
 screen is the logo of a real 1990s charity campaign; its logo, its
 English name and its credit are kept, and only the Japanese slogan under
-the line is translated. The comet and pictures shown after the last
-stage have no text.
+the line is translated.
 
 The story texts use a proportional font: a small patch in the text
 engine advances each character by its width from a table, instead of a
@@ -91,9 +91,9 @@ Expected output:
 
 | File | Size | CRC32 | SHA1 |
 |---|---|---|---|
-| pse19531.13 | 0x080000 | 60339ff2 | 1ad127fcdfd0bd2c2f32ff74602272b90ec28986 |
-| pse19533.2 | 0x400000 | bcfadc71 | 1157f03ddf289002728c8d98d3d8f2438d4ef8da |
-| pse19534.3 | 0x400000 | 1bdfd42c | fb9ece115fac64a9caa56027dcf406e010d5f810 |
+| pse19531.13 | 0x080000 | 5e1e5cf1 | 20c8775fb001753d1e650fa22c67c7268ee2ddd8 |
+| pse19533.2 | 0x400000 | 0cbcd828 | 0c4ed73c0e0cf7c16924bd0e8b77e5745f71511b |
+| pse19534.3 | 0x400000 | 4af9920d | f2184fabfb3bbbe92f3b05bcdf572b889359fbbf |
 
 Unchanged from `puyosun`: mpr19532.1, mpr19535.4, mpr19536.5,
 mpr19537.6, mpr19538.8, mpr19539.9.
@@ -117,6 +117,7 @@ The tools in `tools/`:
 | `ranking.py` | ranking labels |
 | `results.py` | results screen (MAX CHAIN) |
 | `nameentry.py` | name entry titles |
+| `ending.py` | the ending lines, written across |
 | `aids.py` | the slogan of the "Act Against AIDS" screen |
 | `dlgchars.py` | dialogue font codes |
 
