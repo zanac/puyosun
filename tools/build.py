@@ -15,6 +15,9 @@ import cmpdec
 import cmpenc
 import grpdat
 import story
+import gfx
+import menus
+import screens
 from quotes import QUOTES
 
 PROG_BASE = 0x06004000      # where the decompressed program runs
@@ -23,11 +26,11 @@ EPROM_SIZE = 0x80000
 FREE_AT = 0x73000           # 0xff to the end of the EPROM
 EPROM_CPU = 0x22200000      # the EPROM as the SH-2 reads it (cache-through)
 
-# sprite sets of the texts in mpr19533.2 (after the word swap): (offset,
+# sprite sets of the texts (cartridge region offsets): (offset,
 # entries, offset of the next set). The loader takes the size of a set from
 # the next entry of the resource table, so they are rewritten in place.
-DIALOGUE = (0x11a14, 221, 0x14e4c)      # win quotes: 8x16 0-43, 16x16 44-
-STORY = (0x5ffa4, 349, 0x65320)         # scenes: 16x16, balloon from 0x150
+DIALOGUE = (0x411a14, 221, 0x414e4c)      # win quotes: 8x16 0-43, 16x16 44-
+STORY = (0x45ffa4, 349, 0x465320)         # scenes: 16x16, balloon from 0x150
 
 # characters: ASCII at their codes, then these two
 EXTRA = {'…': 0x7f, '♪': 0x80}
@@ -220,11 +223,22 @@ def patch_code(prog, widths_cpu):
     prog[a:a + len(code)] = code
 
 
+def next_set(prog, at):
+    """region offset of the resource after the one at `at` (its room)"""
+    t = 0x0602e81c - PROG_BASE
+    ptrs = set()
+    for k in range(363):
+        p = be32(prog, t + k * 16 + 8)
+        if 0x22000000 <= p < 0x24400000:
+            ptrs.add(p - 0x22000000)
+    return min(p for p in ptrs if p > at)
+
+
 # --- everything ----------------------------------------------------------------
 
-def build(epr, mpr2, grp, comic):
-    """English EPROM and mpr19533.2 from the arcade ones; returns (eprom,
-    mpr2, log)"""
+def build(epr, reg, grp, comic):
+    """English EPROM from the arcade one, the mask ROMs changed in reg (the
+    cartridge region from 0x400000, CPU byte order); returns (eprom, log)"""
     log = []
     assert len(epr) == EPROM_SIZE
     prog, end = cmpdec.decompress(epr, PROG_AT)
@@ -242,13 +256,15 @@ def build(epr, mpr2, grp, comic):
 
     font = pc_font(grp)
     # sprite sets
-    reg = bytearray(word_swap(mpr2))
+    block = gfx.block_font(gfx.SpriteSet(reg, DIALOGUE[0]))
     low = {c: DIALOGUE_LOW + c - 0x20 for c in range(0x20, 0x2c)}
     for name, where, redirect in (('dialogue', DIALOGUE, low), ('story', STORY, {})):
         blob = build_set(reg, where, font, redirect)
         reg[where[0]:where[2]] = blob
         log.append('%s set %x bytes' % (name, len(blob.rstrip(b'\0'))))
-    mpr2 = word_swap(bytes(reg))
+    pc = gfx.pc_font(font)
+    log += menus.build(reg, pc, block)
+    log += screens.build(reg, prog, PROG_BASE, pc, block, lambda at: next_set(prog, at), place)
     # advance widths by character code, and the text engine
     widths = bytearray([16] * 256)
     for c, (adv, cell) in font.items():
@@ -276,21 +292,40 @@ def build(epr, mpr2, grp, comic):
     out[PROG_AT + len(comp):end] = bytes(end - PROG_AT - len(comp))
     assert cmpdec.decompress(out, PROG_AT)[0] == bytes(prog)
     log.append('program %x bytes (was %x), EPROM used to %x of %x' % (len(comp), end - PROG_AT, free[0], EPROM_SIZE))
-    return bytes(out), mpr2, log
+    return bytes(out), log
+
+
+MASKS = [('mpr19533.2', 0x400000), ('mpr19534.3', 0x800000), ('mpr19535.4', 0xc00000),
+         ('mpr19536.5', 0x1000000), ('mpr19537.6', 0x1400000), ('mpr19532.1', 0x1800000),
+         ('mpr19538.8', 0x1c00000), ('mpr19539.9', 0x2000000)]
+OUT_NAME = {'epr19531.13': 'pse19531.13', 'mpr19533.2': 'pse19533.2', 'mpr19534.3': 'pse19534.3',
+            'mpr19535.4': 'pse19535.4', 'mpr19536.5': 'pse19536.5', 'mpr19537.6': 'pse19537.6',
+            'mpr19532.1': 'pse19532.1', 'mpr19538.8': 'pse19538.8', 'mpr19539.9': 'pse19539.9'}
 
 
 def main():
     src, pc, dst = sys.argv[1:4]
     epr = open(os.path.join(src, 'epr19531.13'), 'rb').read()
-    mpr2 = open(os.path.join(src, 'mpr19533.2'), 'rb').read()
+    reg = bytearray(0x2400000)
+    orig = {}
+    for name, at in MASKS:
+        d = open(os.path.join(src, name), 'rb').read()
+        orig[name] = d
+        reg[at:at + len(d)] = word_swap(d)
     grp = open(os.path.join(pc, 'puyo3', 'grp.dat'), 'rb').read()
     comic = open(os.path.join(pc, 'puyo3', 'comic.scr'), 'rb').read()
-    out, mpr2, log = build(epr, mpr2, grp, comic)
+    out, log = build(epr, reg, grp, comic)
     for line in log:
         print(line)
     os.makedirs(dst, exist_ok=True)
-    open(os.path.join(dst, 'pse19531.13'), 'wb').write(out)
-    open(os.path.join(dst, 'pse19533.2'), 'wb').write(mpr2)
+    files = {'epr19531.13': out}
+    for name, at in MASKS:
+        d = word_swap(bytes(reg[at:at + len(orig[name])]))
+        if d != orig[name]:
+            files[name] = d
+    for name, d in files.items():
+        open(os.path.join(dst, OUT_NAME[name]), 'wb').write(d)
+        print('wrote', OUT_NAME[name])
 
 
 if __name__ == '__main__':
