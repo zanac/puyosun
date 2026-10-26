@@ -89,7 +89,11 @@ def build(reg, prog, base, pc, room):
         total = sum(widths[w] for w in words) + GAP * (len(words) - 1)
         # the kana titles span 8 cells of 24 from the first centre
         x = 84 - total // 2
+        # one baseline: the y of the first slot for every word
+        assert prog[slots[0] - 8:slots[0] - 4] == b'\x12\xc0\xa4\x00'
+        y0 = prog[slots[0] - 4:slots[0]]
         for i, a in enumerate(slots):
+            prog[a - 4:a] = y0
             if i < len(words):
                 w = words[i]
                 k = cell[w]

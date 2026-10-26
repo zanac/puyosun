@@ -21,6 +21,7 @@ the Puyo Nexus patch; credit for it goes to its authors.
 |---|---|
 | Win quotes (after each match) | English, checked in the emulator |
 | Story scenes, 24 | English, all 24 checked in the emulator |
+| Secret last stage against Carbuncle (Schezo course, no continue) and its ending | English, checked in the emulator |
 | Game select, character select, practice balloon | English, checked in the emulator |
 | Map screen: plaque, character names | English, checked in the emulator |
 | In-game: chain tag, YEAH!/OH NO!, All Clear!, Offset, curry labels | English (PC patch pictures), checked in the emulator |
@@ -32,7 +33,7 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Endings of the three courses (Arle, Draco, Schezo): the lines written across in place of the vertical kana | English, checked in the emulator for all three |
 | Title logo: "Puyo Puyo" (PC patch picture) | English, checked in the emulator |
 | Nohoho's stage: tea signs; the splash "WOOSH" (PC patch pictures) | English |
-| Name entry title (Draco, Arle, Schezo) | English, checked in the emulator (Arle, Draco) |
+| Name entry title (Draco, Arle, Schezo) | English, checked in the emulator for all three |
 | ROM set `puyosune`, build script, driver entry | done |
 
 Nothing is left in Japanese that we have seen. The "Act Against AIDS"
@@ -97,7 +98,7 @@ Expected output:
 
 | File | Size | CRC32 | SHA1 |
 |---|---|---|---|
-| pse19531.13 | 0x080000 | 5e1e5cf1 | 20c8775fb001753d1e650fa22c67c7268ee2ddd8 |
+| pse19531.13 | 0x080000 | e14ff686 | dc370ec338473c5fa3c54831854e0e808e1349f2 |
 | pse19533.2 | 0x400000 | 6f534729 | 84f4545d488d88c689f23cc9ca3f54e4d9668371 |
 | pse19534.3 | 0x400000 | 09ddbc17 | c6d028a1b926cd725a6c6c541e57b957935c0674 |
 
