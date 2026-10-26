@@ -34,6 +34,9 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Title logo: "Puyo Puyo" (PC patch picture) | English, checked in the emulator |
 | Nohoho's stage: tea signs; the splash "WOOSH" (PC patch pictures) | English |
 | Name entry title (Draco, Arle, Schezo) | English, checked in the emulator for all three |
+| Two players: challenger, versus fighter select, VS names, handicap, rounds, winner's line | English, checked in the emulator |
+| Practice (EASY course, Draco, 3 stages) | English, checked in the emulator |
+| Defeat: loser's screen, CONTINUE? countdown, GAME OVER | English, checked in the emulator |
 | ROM set `puyosune`, build script, driver entry | done |
 
 Nothing is left in Japanese that we have seen. The "Act Against AIDS"
