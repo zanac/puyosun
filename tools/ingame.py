@@ -10,8 +10,12 @@ from gfx import SpriteSet
 
 # (set in the cartridge, grp.dat entry, pictures)
 PICTURES = [
-    (0x400000, 0, [379, 380, 381]),     # 'chain' tag, YEAH! (win), OH NO! (lose)
-    (0x416ce8, 5, list(range(27, 49))),  # All Clear! (animation), Offset
+    (0x400000, 0, [379, 380, 381], None),       # 'chain' tag, YEAH! (win), OH NO! (lose)
+    (0x416ce8, 5, list(range(27, 49)), None),   # All Clear! (animation), Offset
+    (0x45b9e0, 19, [7], 0x45c9a4),              # 'Rules' of the rules demo (compressed set)
+    # curry strength labels (Sweet .. Hot): the PC set has them after its
+    # own frames, (arcade picture, PC frame)
+    (0x416ce8, 5, [(61, 138), (62, 139), (63, 140), (64, 141), (65, 142)], None),
 ]
 
 
@@ -37,11 +41,12 @@ def pc_frames(grp, k):
 
 def build(reg, grp):
     n = 0
-    for at, k, ids in PICTURES:
-        ss = SpriteSet(reg, at, compressed=False)
+    for at, k, ids, room in PICTURES:
+        ss = SpriteSet(reg, at, room=room, compressed=room is not None)
         frames = pc_frames(grp, k)
         for i in ids:
-            w, h, px = frames[i]
+            i, j = i if isinstance(i, tuple) else (i, i)
+            w, h, px = frames[j]
             assert (w, h) == tuple(ss.desc[i][:2]) and max(px) < 16, (k, i)
             ss.put(i, px)
             n += 1

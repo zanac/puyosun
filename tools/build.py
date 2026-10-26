@@ -17,6 +17,7 @@ import grpdat
 import story
 import ingame
 import ranking
+import tutorial
 import gfx
 import menus
 import screens
@@ -290,6 +291,7 @@ def build(epr, reg, grp, comic):
     charmap = {c: [c] for c in font}
     charmap[0x1f] = [0x2c, 0x20]
     log += story.build(prog, PROG_BASE, comic, charmap, widths, place)
+    log += tutorial.build(prog, PROG_BASE, widths, place)
     # program
     comp = cmpenc.compress(bytes(prog))
     assert PROG_AT + len(comp) <= end, 'program does not fit (%x > %x)' % (len(comp), end - PROG_AT)
