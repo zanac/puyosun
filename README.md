@@ -19,7 +19,7 @@ the Puyo Nexus patch; credit for it goes to its authors.
 
 | Part | State |
 |---|---|
-| Win quotes (after each match) | English, checked in the emulator |
+| Win quotes (after each match), all 69 | English, each one checked on screen in the emulator |
 | Story scenes, 24 | English, all 24 checked in the emulator |
 | Secret last stage against Carbuncle (Schezo course, no continue) and its ending | English, checked in the emulator |
 | Game select, character select, practice balloon | English, checked in the emulator |
@@ -37,6 +37,7 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Two players: challenger, versus fighter select, VS names, handicap, rounds, winner's line | English, checked in the emulator |
 | Practice (EASY course, Draco, 3 stages) | English, checked in the emulator |
 | Defeat: loser's screen, CONTINUE? countdown, GAME OVER | English, checked in the emulator |
+| Service mode: ST-V test menu (BIOS) | English in the original; the game's own test screen draws nothing in mame2003-plus (also with the Japanese set), its texts in the program are English/romaji |
 | ROM set `puyosune`, build script, driver entry | done |
 
 Nothing is left in Japanese that we have seen. The "Act Against AIDS"
