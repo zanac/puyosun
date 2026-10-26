@@ -27,15 +27,16 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Side tags: WINS, JOIN OK, COME ON, RIVAL, NO ENTRY | English, checked in the emulator |
 | Ranking: difficulty labels, CHAIN | English, checked in the emulator |
 | Rules demonstration (attract mode) | English, checked in the emulator |
+| "Act Against AIDS" screen (attract mode): slogan and its three lines | English, checked in the emulator |
 | Results screen after the last game: MAX CHAIN; VS opponent name, Total (PC patch picture) | English; MAX CHAIN checked in the emulator, the names not yet seen |
 | Name entry title (Draco, Arle, Schezo) | English, checked in the emulator (Arle) |
 | ROM set `puyosune`, build script, driver entry | done |
 
-Left in Japanese:
-
-- the "Act Against AIDS" charity screen of the attract mode (a real
-  campaign logo with its slogan);
-- the comet and pictures shown after the last stage have no text.
+Nothing is left in Japanese that we have seen. The "Act Against AIDS"
+screen is the logo of a real 1990s charity campaign; its logo, its
+English name and its credit are kept, and only the Japanese slogan under
+the line is translated. The comet and pictures shown after the last
+stage have no text.
 
 The story texts use a proportional font: a small patch in the text
 engine advances each character by its width from a table, instead of a
@@ -52,6 +53,7 @@ Japanese arcade original on the left, `puyosune` on the right.
 | Character select | ![character select](screenshots/character_select.png) |
 | Map | ![map](screenshots/map.png) |
 | Story scene | ![story](screenshots/story.png) |
+| Act Against AIDS | ![aids](screenshots/aids.png) |
 
 `puyosune` only:
 
@@ -90,7 +92,7 @@ Expected output:
 | File | Size | CRC32 | SHA1 |
 |---|---|---|---|
 | pse19531.13 | 0x080000 | 60339ff2 | 1ad127fcdfd0bd2c2f32ff74602272b90ec28986 |
-| pse19533.2 | 0x400000 | 75ecd30b | 928d5fb71ff949fe8f99889517be29829df40538 |
+| pse19533.2 | 0x400000 | bcfadc71 | 1157f03ddf289002728c8d98d3d8f2438d4ef8da |
 | pse19534.3 | 0x400000 | 1bdfd42c | fb9ece115fac64a9caa56027dcf406e010d5f810 |
 
 Unchanged from `puyosun`: mpr19532.1, mpr19535.4, mpr19536.5,
@@ -115,6 +117,7 @@ The tools in `tools/`:
 | `ranking.py` | ranking labels |
 | `results.py` | results screen (MAX CHAIN) |
 | `nameentry.py` | name entry titles |
+| `aids.py` | the slogan of the "Act Against AIDS" screen |
 | `dlgchars.py` | dialogue font codes |
 
 The program is stored compressed in the EPROM and unpacked to work RAM
