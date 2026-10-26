@@ -16,6 +16,8 @@ PICTURES = [
     # curry strength labels (Sweet .. Hot): the PC set has them after its
     # own frames, (arcade picture, PC frame)
     (0x416ce8, 5, [(61, 138), (62, 139), (63, 140), (64, 141), (65, 142)], None),
+    # character names and 'Total' of the score tally (set 233, compressed)
+    (0xa869f4, 173, list(range(12, 31)), 0xa885b0),
 ]
 
 

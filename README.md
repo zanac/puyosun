@@ -27,6 +27,7 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Side tags: WINS, JOIN OK, COME ON, RIVAL, NO ENTRY | English, checked in the emulator |
 | Ranking: difficulty labels, CHAIN | English, checked in the emulator |
 | Rules demonstration (attract mode) | English, checked in the emulator |
+| Score tally: character names, Total | English (PC patch picture), not yet seen in the emulator |
 | ROM set `puyosune`, build script, driver entry | done |
 
 Left in Japanese:
@@ -87,7 +88,7 @@ Expected output:
 |---|---|---|---|
 | pse19531.13 | 0x080000 | 7d482532 | bd9fbe308ff1c8360bbf63a32bd3402d38c6a63f |
 | pse19533.2 | 0x400000 | b7bbaf62 | 87ebc2016ec0b8317fb35ca17bbb3169464942fc |
-| pse19534.3 | 0x400000 | 9a6b7032 | 67342c02f342765b29f2b50a7e3e9356eb1cfed7 |
+| pse19534.3 | 0x400000 | 981689c9 | 2f26468eee0c9d4b571dea802d86af447a3d1639 |
 
 Unchanged from `puyosun`: mpr19532.1, mpr19535.4, mpr19536.5,
 mpr19537.6, mpr19538.8, mpr19539.9.
