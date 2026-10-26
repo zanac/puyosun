@@ -16,8 +16,11 @@ PICTURES = [
     # curry strength labels (Sweet .. Hot): the PC set has them after its
     # own frames, (arcade picture, PC frame)
     (0x416ce8, 5, [(61, 138), (62, 139), (63, 140), (64, 141), (65, 142)], None),
-    # character names and 'Total' of the score tally (set 233, compressed)
-    (0xa869f4, 173, list(range(12, 31)), 0xa885b0),
+    # the tea signs of Nohoho's stage, the WOOSH of the splash
+    (0x5de868, 36, [0, 2, 7, 9, 12, 16], None),
+    (0x5fb4e4, 37, [17, 18], None),
+    # the 'Puyo Puyo' of the title logo (set 211, compressed)
+    (0xa23ed4, 158, [0, 1, 2, 3], 0xa26bec),       # and no eyes on the kana
 ]
 
 
@@ -77,3 +80,41 @@ def tags(reg, block):
         ss.put(i, px)
     ss.write()
     return ['side tags: %d' % len(TAGS)]
+
+
+# the results screen names (VS ...) and Total (set 233, compressed): the
+# PC patch has them, but cut where a name is wider than the cell; they are
+# drawn again here in the PC font, right aligned like the PC ones; a name
+# wider than its cell is drawn closer and then narrowed to fit (the set
+# has no room for wider cells)
+NAME_SET, NAME_ROOM = 0xa869f4, 0xa885b0
+NAMES = ['Skeleton T', 'Harpy', 'Choppun', 'Draco', 'Incubus', 'Suketoudara',
+         'Kikimora', 'Nohoho', 'Kodomo Dragon', 'Witch', 'Zou Daimaoh',
+         'Honeybee', 'Lagnus', 'Rulue', 'Schezo', 'Satan', 'Arle', 'Carbuncle',
+         'Total']
+NAME_COLOURS = {1: 1, 9: 12, 15: 15}
+
+
+def names(reg, pc):
+    from gfx import Canvas
+    ss = SpriteSet(reg, NAME_SET, room=NAME_ROOM, compressed=True)
+    for i, name in enumerate(NAMES, 12):
+        w, h, off, size = ss.desc[i]
+        track = 0 if pc.width(name) <= w - 1 else -1
+        tw = pc.width(name, track)
+        big = Canvas(tw + 2, h)
+        pc.draw(big, name, 0, 0, NAME_COLOURS, track)
+        cv = Canvas(w, h)
+        if tw + 1 <= w - 1:
+            for y in range(h):
+                for x in range(tw + 1):
+                    cv.px[y * w + w - 2 - tw + x] = big.px[y * big.w + x]
+        else:
+            # narrowed: each column of the cell takes the column of the name
+            # at the same proportion
+            for y in range(h):
+                for x in range(w - 1):
+                    cv.px[y * w + x] = big.px[y * big.w + x * (tw + 1) // (w - 1)]
+        ss.put(i, cv.px)
+    ss.write()
+    return ['results names: %d' % len(NAMES)]

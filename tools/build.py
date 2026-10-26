@@ -271,6 +271,7 @@ def build(epr, reg, grp, comic):
     pc = gfx.pc_font(font)
     log += menus.build(reg, pc, block)
     log += ingame.build(reg, grp)
+    log += ingame.names(reg, gfx.pc_font(font))
     log += ingame.tags(reg, block)
     log += screens.build(reg, prog, PROG_BASE, pc, block, lambda at: next_set(prog, at), place)
     log += ranking.build(reg, prog, PROG_BASE, block, lambda at: next_set(prog, at), place)

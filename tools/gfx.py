@@ -52,6 +52,9 @@ class SpriteSet:
             self.reg[self.base:self.base + self.size] = self.pix
             return
         blob = cmpenc.compress(bytes(self.pix))
+        if self.base + len(blob) > self.room:
+            blob = cmpenc.compress_optimal(bytes(self.pix))
+            assert cmpdec.decompress(blob)[0] == bytes(self.pix)
         assert self.base + len(blob) <= self.room, 'sprite set at %x too big' % self.at
         self.reg[self.base:self.room] = blob + bytes(self.room - self.base - len(blob))
 

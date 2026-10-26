@@ -148,3 +148,104 @@ def compress(data):
     flush_lit()
     out.append(0)
     return bytes(out)
+
+
+def compress_optimal(data):
+    """the same format, with a cheapest parse (dynamic programming over the
+    positions, from the end): smaller than compress() on pictures"""
+    data = bytes(data)
+    n = len(data)
+    f = _Finder(data)
+    # candidates per position: (length, distance), the longest per distance
+    cands = []
+    for i in range(n):
+        cs = []
+        if i + 3 <= n:
+            f.insert_upto(i)
+            limit = min(MAXLEN, n - i)
+            c = f.head.get(data[i:i + 3], -1)
+            depth = 0
+            seen = set()
+            while c >= 0 and i - c <= MAXD and depth < DEPTH * 2:
+                ln = _match_len(data, c, i, limit)
+                if ln >= 3 and (i - c) not in seen:
+                    cs.append((ln, i - c))
+                    seen.add(i - c)
+                c = f.prev[c]
+                depth += 1
+        for dd in (1, 2):
+            if i >= dd and i + 2 <= n:
+                ln = _match_len(data, i - dd, i, min(MAXLEN, n - i))
+                if ln >= 2:
+                    cs.append((ln, dd))
+        cands.append(cs)
+    INF = 1 << 60
+    cost = [INF] * (n + 1)
+    step = [None] * (n + 1)
+    cost[n] = 1                       # the end byte
+    for i in range(n - 1, -1, -1):
+        # a literal: one byte (the run headers are left out of the model)
+        best = cost[i + 1] + 1
+        bstep = ('L', 1)
+        for ln, d in cands[i]:
+            near = d <= 255
+            lens = set(range(2, min(ln, 17) + 1))
+            lens.add(ln)
+            if ln > 17:
+                lens.add(18)
+            for l in lens:
+                c = (2 if l <= 17 else 3) + (0 if near else 1)
+                if cost[i + l] + c < best:
+                    best = cost[i + l] + c
+                    bstep = ('C', l, d)
+        cost[i] = best
+        step[i] = bstep
+    # emit as compress() does
+    out = bytearray()
+    lit = bytearray()
+
+    def flush_lit():
+        k = len(lit)
+        p = 0
+        while k - p > 0:
+            m = min(k - p, 0x1fff)
+            if m <= 31:
+                out.append(0x40 | m)
+            else:
+                out.append(0x60 | (m >> 8))
+                out.append(m & 0xff)
+            out.extend(lit[p:p + m])
+            p += m
+        del lit[:k]
+
+    def put_copy(m, d):
+        if m <= 17 and d <= 255 and len(lit) <= 7:
+            out.append(0x80 | (len(lit) << 4) | (m - 2))
+            out.extend(lit)
+            del lit[:]
+            out.append(d)
+            return
+        flush_lit()
+        if m <= 17:
+            if d <= 255:
+                out.extend(bytes((0x00 | (m - 2), d)))
+            else:
+                out.extend(bytes((0x10 | (m - 2), d & 0xff, d >> 8)))
+        else:
+            if d <= 255:
+                out.extend(bytes((0x20 | (m >> 8), m & 0xff, d)))
+            else:
+                out.extend(bytes((0x30 | (m >> 8), m & 0xff, d & 0xff, d >> 8)))
+
+    i = 0
+    while i < n:
+        s = step[i]
+        if s[0] == 'L':
+            lit.append(data[i])
+            i += 1
+        else:
+            put_copy(s[1], s[2])
+            i += s[1]
+    flush_lit()
+    out.append(0)
+    return bytes(out)
