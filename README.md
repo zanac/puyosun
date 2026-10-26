@@ -27,14 +27,15 @@ the Puyo Nexus patch; credit for it goes to its authors.
 | Side tags: WINS, JOIN OK, COME ON, RIVAL, NO ENTRY | English, checked in the emulator |
 | Ranking: difficulty labels, CHAIN | English, checked in the emulator |
 | Rules demonstration (attract mode) | English, checked in the emulator |
-| Score tally: character names, Total | English (PC patch picture), not yet seen in the emulator |
+| Results screen after the last game: MAX CHAIN; VS opponent name, Total (PC patch picture) | English; MAX CHAIN checked in the emulator, the names not yet seen |
+| Name entry title (Draco, Arle, Schezo) | English, checked in the emulator (Arle) |
 | ROM set `puyosune`, build script, driver entry | done |
 
 Left in Japanese:
 
-- the "Act Against AIDS" charity screen of the attract mode;
-- the ending and staff roll pictures (not reached in testing);
-- the name entry screen (not seen in testing).
+- the "Act Against AIDS" charity screen of the attract mode (a real
+  campaign logo with its slogan);
+- the comet and pictures shown after the last stage have no text.
 
 The story texts use a proportional font: a small patch in the text
 engine advances each character by its width from a table, instead of a
@@ -61,6 +62,8 @@ Japanese arcade original on the left, `puyosune` on the right.
 | YEAH! / OH NO! | ![yeah](screenshots/yeah.png) |
 | Rules demonstration | ![rules](screenshots/rules.png) |
 | Ranking | ![ranking](screenshots/ranking.png) |
+| Results | ![results](screenshots/results.png) |
+| Name entry | ![name entry](screenshots/name_entry.png) |
 
 ## Building the ROM set
 
@@ -86,9 +89,9 @@ Expected output:
 
 | File | Size | CRC32 | SHA1 |
 |---|---|---|---|
-| pse19531.13 | 0x080000 | 7d482532 | bd9fbe308ff1c8360bbf63a32bd3402d38c6a63f |
-| pse19533.2 | 0x400000 | b7bbaf62 | 87ebc2016ec0b8317fb35ca17bbb3169464942fc |
-| pse19534.3 | 0x400000 | 981689c9 | 2f26468eee0c9d4b571dea802d86af447a3d1639 |
+| pse19531.13 | 0x080000 | 60339ff2 | 1ad127fcdfd0bd2c2f32ff74602272b90ec28986 |
+| pse19533.2 | 0x400000 | 75ecd30b | 928d5fb71ff949fe8f99889517be29829df40538 |
+| pse19534.3 | 0x400000 | 1bdfd42c | fb9ece115fac64a9caa56027dcf406e010d5f810 |
 
 Unchanged from `puyosun`: mpr19532.1, mpr19535.4, mpr19536.5,
 mpr19537.6, mpr19538.8, mpr19539.9.
@@ -110,6 +113,8 @@ The tools in `tools/`:
 | `menus.py`, `screens.py` | menus, cabinets, character names, map |
 | `ingame.py` | in-game pictures from the PC patch and side tags |
 | `ranking.py` | ranking labels |
+| `results.py` | results screen (MAX CHAIN) |
+| `nameentry.py` | name entry titles |
 | `dlgchars.py` | dialogue font codes |
 
 The program is stored compressed in the EPROM and unpacked to work RAM

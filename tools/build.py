@@ -14,6 +14,8 @@ import sys
 import cmpdec
 import cmpenc
 import grpdat
+import nameentry
+import results
 import story
 import ingame
 import ranking
@@ -271,6 +273,8 @@ def build(epr, reg, grp, comic):
     log += ingame.tags(reg, block)
     log += screens.build(reg, prog, PROG_BASE, pc, block, lambda at: next_set(prog, at), place)
     log += ranking.build(reg, prog, PROG_BASE, block, lambda at: next_set(prog, at), place)
+    log += nameentry.build(reg, prog, PROG_BASE, pc, next_set(prog, nameentry.NAME_SET))
+    log += results.build(reg, next_set(prog, results.RESULTS_SET))
     # advance widths by character code, and the text engine
     widths = bytearray([16] * 256)
     for c, (adv, cell) in font.items():
