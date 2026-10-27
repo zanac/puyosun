@@ -15,6 +15,10 @@ the same style.
 All the translation work in the story scenes and the win quotes is from
 the Puyo Nexus patch; credit for it goes to its authors.
 
+## Support
+Hey dude! Help me out for a couple of :beers: or a :coffee:!<br/>
+[![coffee](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://bmc.link/zanac)
+
 ## Status
 
 | Part | State |
