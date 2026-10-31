@@ -1,16 +1,17 @@
-"""Build the English Puyo Puyo Sun (ST-V) from the arcade ROMs and the Puyo
-Nexus English patch of the Windows version. Python 3 standard library only.
+"""Build the English Puyo Puyo Sun (ST-V) from the arcade ROMs and the
+translated assets of the Puyo Nexus English patch of the Windows version
+(assets/puyosune_assets.zip, see assets.py). Python 3 standard library only.
 
-    python3 build.py ARCADE_DIR PC_DIR OUT_DIR
+    python3 build.py ARCADE_DIR OUT_DIR [ASSETS_ZIP]
 
-ARCADE_DIR holds epr19531.13 and mpr19533.2 (unzipped puyosun set), PC_DIR
-the patched Windows game (puyo3/grp.dat, puyo3/comic.scr). OUT_DIR receives
-pse19531.13 and pse19533.2, the new program EPROM and mask ROM 2.
+ARCADE_DIR holds the ROMs of the puyosun set, unzipped. OUT_DIR receives the
+changed ROMs: pse19531.13 (program EPROM), pse19533.2 and pse19534.3.
 """
 import os
 import struct
 import sys
 
+import assets as assets_zip
 import cmpdec
 import cmpenc
 import grpdat
@@ -243,7 +244,7 @@ def next_set(prog, at):
 
 # --- everything ----------------------------------------------------------------
 
-def build(epr, reg, grp, comic):
+def build(epr, reg, assets):
     """English EPROM from the arcade one, the mask ROMs changed in reg (the
     cartridge region from 0x400000, CPU byte order); returns (eprom, log)"""
     log = []
@@ -261,7 +262,7 @@ def build(epr, reg, grp, comic):
         free[0] = at + len(blob)
         return EPROM_CPU + at
 
-    font = pc_font(grp)
+    font = assets.font
     # sprite sets
     block = gfx.block_font(gfx.SpriteSet(reg, DIALOGUE[0]))
     for name, where, redirect in (('dialogue', DIALOGUE, LOW), ('story', STORY, {})):
@@ -270,7 +271,7 @@ def build(epr, reg, grp, comic):
         log.append('%s set %x bytes' % (name, len(blob.rstrip(b'\0'))))
     pc = gfx.pc_font(font)
     log += menus.build(reg, pc, block)
-    log += ingame.build(reg, grp)
+    log += ingame.build(reg, assets.pictures)
     log += ingame.names(reg, gfx.pc_font(font))
     log += ingame.tags(reg, block)
     log += screens.build(reg, prog, PROG_BASE, pc, block, lambda at: next_set(prog, at), place)
@@ -299,7 +300,7 @@ def build(epr, reg, grp, comic):
     # story scenes; the PC patch writes ", " as one character 0x1f
     charmap = {c: [c] for c in font}
     charmap[0x1f] = [0x2c, 0x20]
-    log += story.build(prog, PROG_BASE, comic, charmap, widths, place)
+    log += story.build(prog, PROG_BASE, assets.story, charmap, widths, place)
     log += tutorial.build(prog, PROG_BASE, widths, place)
     log += ending.build(reg, prog, PROG_BASE, pc, place)
     # program
@@ -321,7 +322,8 @@ OUT_NAME = {'epr19531.13': 'pse19531.13', 'mpr19533.2': 'pse19533.2', 'mpr19534.
 
 
 def main():
-    src, pc, dst = sys.argv[1:4]
+    src, dst = sys.argv[1:3]
+    pack = assets_zip.load(*sys.argv[3:4])
     epr = open(os.path.join(src, 'epr19531.13'), 'rb').read()
     reg = bytearray(0x2400000)
     orig = {}
@@ -329,9 +331,7 @@ def main():
         d = open(os.path.join(src, name), 'rb').read()
         orig[name] = d
         reg[at:at + len(d)] = word_swap(d)
-    grp = open(os.path.join(pc, 'puyo3', 'grp.dat'), 'rb').read()
-    comic = open(os.path.join(pc, 'puyo3', 'comic.scr'), 'rb').read()
-    out, log = build(epr, reg, grp, comic)
+    out, log = build(epr, reg, pack)
     for line in log:
         print(line)
     os.makedirs(dst, exist_ok=True)

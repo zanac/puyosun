@@ -193,11 +193,10 @@ def convert(words, charmap, window, widths):
     return out, typing + int(waits * scale), window
 
 
-def build(prog, base, comic, charmap, widths, place):
-    """put the PC texts in the arcade scenes of prog (bytearray); place(bytes,
-    align) puts data in the cartridge and returns its CPU address. Returns
-    a log."""
-    pcs = pc_scenes(comic)
+def build(prog, base, pcs, charmap, widths, place):
+    """put the PC texts (pcs: pc_scenes() of comic.scr, from assets.py) in
+    the arcade scenes of prog (bytearray); place(bytes, align) puts data in
+    the cartridge and returns its CPU address. Returns a log."""
     arc = arcade_scenes(prog, base)
     assert len(pcs) == len(arc) == len(WINDOWS) == 24, (len(pcs), len(arc))
     log = []

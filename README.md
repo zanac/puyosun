@@ -88,14 +88,15 @@ You need:
 
 - the MAME `puyosun` set (`puyosun.zip`, the 9 ROMs below are checked by
   CRC);
-- the Puyo Nexus English patch of the Windows version as it is
-  distributed (`Puyo_Puyo_Sun__English_Patched_.zip`, which contains
-  `puyo3/grp.dat` and `puyo3/comic.scr`);
 - Python 3 (standard library only).
+
+The translated assets of the Puyo Nexus patch that the build uses (the
+English font, the in-game pictures and the story texts) are in
+`assets/puyosune_assets.zip`, so the PC patch is not needed.
 
 ```
 cd tools
-python3 make_puyosune.py puyosun.zip Puyo_Puyo_Sun__English_Patched_.zip OUT_DIR
+python3 make_puyosune.py puyosun.zip OUT_DIR
 ```
 
 `OUT_DIR/puyosune.zip` is the whole set (the three new ROMs and the
@@ -122,7 +123,9 @@ The tools in `tools/`:
 | `make_puyosune.py` | release script: checks the inputs, builds, writes the set |
 | `build.py` | the whole build; program decompression and recompression, font, width table, text engine patch |
 | `cmpdec.py`, `cmpenc.py` | the LZ format of the program and of the compressed sprite sets |
-| `grpdat.py` | reader of the PC `grp.dat` pictures |
+| `assets.py` | reads `assets/puyosune_assets.zip`, the translated assets of the PC patch |
+| `extract_assets.py` | makes `assets/puyosune_assets.zip` from the PC patch (`Puyo_Puyo_Sun__English_Patched_.zip`); only needed to remake it |
+| `grpdat.py` | reader of the PC `grp.dat` pictures (used by `extract_assets.py`) |
 | `gfx.py` | sprite sets of the cartridge, drawing English lettering into them |
 | `quotes.py` | win quotes |
 | `story.py`, `windows.py` | story scenes: PC pages matched to the arcade events, page timings |

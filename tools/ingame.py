@@ -44,14 +44,14 @@ def pc_frames(grp, k):
     return out
 
 
-def build(reg, grp):
+def build(reg, pictures):
+    """pictures: {(grp.dat entry, frame): (w, h, pixels)} (assets.py)"""
     n = 0
     for at, k, ids, room in PICTURES:
         ss = SpriteSet(reg, at, room=room, compressed=room is not None)
-        frames = pc_frames(grp, k)
         for i in ids:
             i, j = i if isinstance(i, tuple) else (i, i)
-            w, h, px = frames[j]
+            w, h, px = pictures[(k, j)]
             assert (w, h) == tuple(ss.desc[i][:2]) and max(px) < 16, (k, i)
             ss.put(i, px)
             n += 1

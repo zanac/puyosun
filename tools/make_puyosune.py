@@ -1,8 +1,8 @@
-"""Make the puyosune set (Puyo Puyo Sun, English) from the arcade puyosun set
-and the Puyo Nexus English patch of the Windows version, both as they come.
-Python 3 standard library only.
+"""Make the puyosune set (Puyo Puyo Sun, English) from the arcade puyosun set,
+as it comes, and the translated assets of the Puyo Nexus English patch in
+assets/puyosune_assets.zip. Python 3 standard library only.
 
-    python3 make_puyosune.py puyosun.zip Puyo_Puyo_Sun__English_Patched_.zip OUT_DIR
+    python3 make_puyosune.py puyosun.zip OUT_DIR [ASSETS_ZIP]
 
 OUT_DIR receives puyosune.zip (the whole set: the three changed ROMs and the
 unchanged mask ROMs) and the three changed ROMs as files.
@@ -13,6 +13,7 @@ import sys
 import zipfile
 import zlib
 
+import assets
 import build
 
 EXPECTED = {
@@ -34,7 +35,8 @@ def read_member(z, name):
 
 
 def main():
-    arcade, patch, dst = sys.argv[1:4]
+    arcade, dst = sys.argv[1:3]
+    pack = assets.load(*sys.argv[3:4])
     za = zipfile.ZipFile(arcade)
     roms = {}
     for name, want in EXPECTED.items():
@@ -42,14 +44,11 @@ def main():
         if crc(d) != want:
             raise SystemExit('%s: CRC %s, expected %s (puyosun set from MAME)' % (name, crc(d), want))
         roms[name] = d
-    zp = zipfile.ZipFile(patch)
-    grp = read_member(zp, 'puyo3/grp.dat')
-    comic = read_member(zp, 'puyo3/comic.scr')
 
     reg = bytearray(0x2400000)
     for name, at in build.MASKS:
         reg[at:at + len(roms[name])] = build.word_swap(roms[name])
-    out, log = build.build(roms['epr19531.13'], reg, grp, comic)
+    out, log = build.build(roms['epr19531.13'], reg, pack)
     for line in log:
         print(line)
     files = {'pse19531.13': out}
